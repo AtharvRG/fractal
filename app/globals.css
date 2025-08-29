@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Retaining these for UI components, even though canvas uses its own colors */
+  --tuna: #32303f;
+  --aquamarine: #88f9b5;
+  --gradient-start: #e2c592;
+  --gradient-end: #16a99f;
+}
+
+body {
+  color: var(--tuna);
+  /* Fallback color matching the top of the canvas gradient */
+  background-color: #e1c699;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+[data-wave-mask] {
+
+  will-change: clip-path;
+}

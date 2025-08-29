@@ -1,0 +1,42 @@
+.animated-gradient-text {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  background: none;
+  border-radius: .5rem;
+  overflow: hidden;
+  line-height: 1;
+}
+.gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background-size: 300% 100%;
+  animation: gradient linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+.gradient-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: #060010;
+  z-index: -1;
+}
+.text-content {
+  position: relative;
+  z-index: 1;
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient linear infinite;
+  font-weight: inherit;
+}
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
