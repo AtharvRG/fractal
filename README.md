@@ -6,7 +6,7 @@
 ### Fractal
 <strong>Share an entire mini repository in a single link — everything lives in the URL hash.</strong>
 
-[Live Site](https://YOUR-LIVE-URL-HERE) · [How It Works](#-how-it-works) · [FAQ](#-faq) · MIT
+[Live Site](https://YOUR-LIVE-URL-HERE) · [How It Works](#-inside-the-browser-how-it-works) · [FAQ](#-faq) · MIT
 
 <br/>
 
