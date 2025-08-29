@@ -6,14 +6,13 @@
 ### Fractal
 <strong>Share an entire mini repository in a single link — everything lives in the URL hash.</strong>
 
-[Live Site](https://YOUR-LIVE-URL-HERE) · [How It Works](#-how-it-works) · [FAQ](#-faq) · MIT
+[Live Site](https://fractal-anchor.vercel.app/) · [How It Works](#-inside-the-browser-how-it-works) · [FAQ](#-faq) · MIT
 
 <br/>
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Client-Side Only](https://img.shields.io/badge/Data-Stays%20Local-success)
-![Multi‑Language](https://img.shields.io/badge/Langs-15%2B-informational)
-![Zero Backend](https://img.shields.io/badge/Server-Roundtrip%200-purple)
+
 
 </div>
 
@@ -85,15 +84,20 @@ If your desired language isn't present, you can usually drop a `tree-sitter-<lan
 - Sharing is explicit; closing the tab leaves no remote trace.
 
 ## 🧾 FAQ
-**Q: Can I collaborate in real time?**  Not yet. Real-time presence (CRDT) is a roadmap idea.
+**Q: Can I collaborate in real time?**  
+A: Not yet. Real-time presence (CRDT) is a roadmap idea.
 
-**Q: Can I execute code?**  Execution is out of scope for now; Fractal focuses on structure, sharing, and AST insight.
+**Q: Can I execute code?**  
+A: Execution is out of scope for now; Fractal focuses on structure, sharing, and AST insight.
 
-**Q: How big can a project be?**  Practically a few hundred KB compressed before URLs become unwieldy(10MB is a safe limit); beyond that use Gist export(max 300MB).
+**Q: How big can a project be?**  
+A: Practically a few hundred KB compressed before URLs become unwieldy(10MB is a safe limit); beyond that use Gist export(max 300MB).
 
-**Q: Why not just a Pastebin?**  Fractal preserves full directory structure + multi-file relationships, not just a single blob. And I like moulding new and intresting way to do things.
+**Q: Why not just a Pastebin?**  
+A: Fractal preserves full directory structure + multi-file relationships, not just a single blob. And I like moulding new and intresting way to do things.
 
-**Q: Are ASTs cached?**  Parsers load per language; AST is regenerated when the file changes (lightweight for typical snippet sizes).
+**Q: Are ASTs cached?**  
+A: Parsers load per language; AST is regenerated when the file changes (lightweight for typical snippet sizes).
 
 ## 🛠 For Curious Technologists
 ```
