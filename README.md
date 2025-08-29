@@ -131,6 +131,20 @@ NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ```
 
+Production (Vercel) setup for Short Links (Supabase):
+
+- Create a table `short_links` with columns: `id text primary key`, `payload text not null`, `created_at timestamptz default now()`, `expires_at timestamptz`, `hit_count int default 0`.
+- In Vercel, set these environment variables (Project Settings → Environment Variables):
+	- `NEXT_PUBLIC_SUPABASE_URL` — your Supabase URL (used by client reads)
+	- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — public anon key
+	- `SUPABASE_SERVICE_ROLE_KEY` — *service role key* (server-side secret; used for writes/reads by the API). Mark this as Environment: Production and as `Encrypted`.
+
+Troubleshooting:
+- If shortening succeeds (rows appear) but retrieval returns "Not found" or permission errors, likely Row Level Security (RLS) prevents anon access. Ensure either:
+	- `SUPABASE_SERVICE_ROLE_KEY` is set in Vercel (the server API will use it), or
+	- Disable RLS on the `short_links` table or add a policy allowing anon selects for that table specifically.
+- Check Supabase table contents in the dashboard and confirm `id` and `payload` columns are populated.
+
 Tests:
 ```bash
 npm test

@@ -33,17 +33,17 @@ export async function POST(req: NextRequest) {
     }
     // Prefer a server-side client that can use service role for inserts if provided
     let supabase;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY; // never expose to client
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY; // must be set for server writes
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     if (!url || !anon) {
       return NextResponse.json({ error: 'Supabase env vars missing (NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY)' }, { status: 500 });
     }
-    if (serviceKey) {
-      supabase = createClient(url, serviceKey, { auth: { persistSession: false } });
-    } else {
-      supabase = getSupabaseClient();
+    // Require service role for POST (writes). Anon keys typically won't have insert permissions.
+    if (!serviceKey) {
+      return NextResponse.json({ error: 'Server missing SUPABASE_SERVICE_ROLE_KEY. Set this env var in Vercel for short-link writes.' }, { status: 500 });
     }
+    supabase = createClient(url, serviceKey, { auth: { persistSession: false } });
     let id = makeId();
     // attempt a few times to avoid collisions
     for (let i=0;i<5;i++) {
@@ -54,13 +54,13 @@ export async function POST(req: NextRequest) {
     const expires_at = ttlSeconds ? new Date(Date.now() + Math.min(ttlSeconds, 60*60*24*30)*1000).toISOString() : null; // cap at 30 days
     const { error } = await supabase.from('short_links').insert({ id, payload, expires_at }).select('id');
     if (error) {
-      // insert error (silenced)
-      return NextResponse.json({ error: 'Store failed', code: error.code, details: error.message }, { status: 500 });
+      // insert error: return useful details to aid debugging (avoid leaking sensitive info)
+      return NextResponse.json({ error: 'Store failed', code: error.code || null, details: error.message || String(error) }, { status: 500 });
     }
     return NextResponse.json({ id, expires_at });
   } catch (e) {
     // server exception (silenced)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Server error', details: (e as Error).message || String(e) }, { status: 500 });
   }
 }
 
@@ -68,9 +68,17 @@ export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.from('short_links').select('*').eq('id', id).single();
-    if (error) return NextResponse.json({ error: 'Lookup failed' }, { status: 500 });
+    // Prefer service role key for reads if available (handles RLS/permission locked tables on production)
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    let supabase;
+    if (serviceKey && url) {
+      supabase = createClient(url, serviceKey, { auth: { persistSession: false } });
+    } else {
+      supabase = getSupabaseClient();
+    }
+    const { data, error } = await supabase.from('short_links').select('payload,expires_at,hit_count').eq('id', id).maybeSingle();
+    if (error) return NextResponse.json({ error: 'Lookup failed', details: error.message || String(error) }, { status: 500 });
     if (!data) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     if (!(await ensureNotExpired(data))) return NextResponse.json({ error: 'Expired' }, { status: 410 });
     // Increment hit counter (fire and forget)
@@ -89,9 +97,12 @@ export async function DELETE(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
   try {
-    const supabase = getSupabaseClient();
-    const { error } = await supabase.from('short_links').delete().eq('id', id);
-    if (error) return NextResponse.json({ error: 'Delete failed' }, { status: 500 });
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!serviceKey || !url) return NextResponse.json({ error: 'Server missing SUPABASE_SERVICE_ROLE_KEY' }, { status: 500 });
+  const supabase = createClient(url, serviceKey, { auth: { persistSession: false } });
+  const { error } = await supabase.from('short_links').delete().eq('id', id);
+  if (error) return NextResponse.json({ error: 'Delete failed', details: error.message || String(error) }, { status: 500 });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
