@@ -4,7 +4,7 @@
 <img src="./Fractal-logo.jpeg" alt="Fractal Logo" width="180" />
 
 ### Fractal
-<strong>Share an entire mini repository in a single link — everything lives in the URL hash.</strong>
+<strong>Share an entire mini-repository in a single link — everything lives in the URL hash.</strong>
 
 [Live Site](https://fractal-anchor.vercel.app/) · [How It Works](#-inside-the-browser-how-it-works) · [FAQ](#-faq) · MIT
 
