@@ -12,8 +12,7 @@
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Client-Side Only](https://img.shields.io/badge/Data-Stays%20Local-success)
-![Multi‑Language](https://img.shields.io/badge/Langs-15%2B-informational)
-![Zero Backend](https://img.shields.io/badge/Server-Roundtrip%200-purple)
+
 
 </div>
 
